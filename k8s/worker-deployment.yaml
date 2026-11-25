@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voice-dispatch-worker
+  namespace: mandapsla
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: voice-dispatch-worker
+  template:
+    metadata:
+      labels:
+        app: voice-dispatch-worker
+    spec:
+      containers:
+        - name: worker
+          image: mandapsla-worker:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            initialDelaySeconds: 3
+            periodSeconds: 5
